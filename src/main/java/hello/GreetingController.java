@@ -18,7 +18,7 @@ public class GreetingController {
     }
 
     @RequestMapping("/")
-    public String defaultEndpoint(@RequestParam(value="name", defaultValue="World") String name) {
+    public String defaultEndpoint(@RequestParam(value="name", defaultValue="Awesom World") String name) {
         return String.format(template, name);
     }
 }
