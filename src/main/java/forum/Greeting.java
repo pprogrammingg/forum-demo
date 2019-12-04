@@ -1,4 +1,4 @@
-package hello;
+package forum;
 
 public class Greeting {
 
