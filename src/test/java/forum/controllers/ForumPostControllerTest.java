@@ -28,7 +28,7 @@ public class ForumPostControllerTest {
 
 	 @Test
 	 public void echoInputText() throws Exception {
-		 String sampleText = "this is text!";
+		 String sampleText = "";
 		 mockMvc.perform( MockMvcRequestBuilders
 			       .post("/forumposts")
 			       .content(sampleText)
