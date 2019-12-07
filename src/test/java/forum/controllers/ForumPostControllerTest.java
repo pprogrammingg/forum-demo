@@ -1,5 +1,7 @@
 package forum.controllers;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -8,69 +10,81 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import forum.document.Posting;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ForumPostController.class)
-@AutoConfigureMockMvc
+@WebMvcTest(ForumPostController.class)
 public class ForumPostControllerTest {
-	
 	 @Autowired
 	 private MockMvc mockMvc;
-
+	
 	 @Test
-	 public void echoInputText() throws Exception {
-		 String sampleText = "this is text!";
+	 public void echoInputMessageBody() throws Exception {
+		 String messageBody = "This is a message body!";
+		 String postingJsonString = asJsonString(new Posting(messageBody));
 		 mockMvc.perform( MockMvcRequestBuilders
 			       .post("/forumposts")
-			       .content(sampleText)
-			       .contentType(MediaType.TEXT_PLAIN_VALUE)
-			       .accept(MediaType.TEXT_PLAIN_VALUE))
+			       .content(postingJsonString)
+			       .contentType(MediaType.APPLICATION_JSON)
+			       .accept(MediaType.APPLICATION_JSON))
 		 		  .andDo(print())
 			      .andExpect(status().isCreated())
-			      .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN_VALUE))
-			      .andExpect(content().string(sampleText));
+			      .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+			      .andExpect(jsonPath("$.messageBody").value(messageBody));
 	 }
 	 
 	 @Test
-	 public void echoInputTextEmptyString() throws Exception {
-		 String sampleText = "";
+	 public void echoInputMessageBodyEmptyString() throws Exception {
+		 String messageBody = "";
+		 String postingJsonString = asJsonString(new Posting(messageBody));
 		 mockMvc.perform( MockMvcRequestBuilders
 			       .post("/forumposts")
-			       .content(sampleText)
-			       .contentType(MediaType.TEXT_PLAIN_VALUE)
-			       .accept(MediaType.TEXT_PLAIN_VALUE))
+			       .content(postingJsonString)
+			       .contentType(MediaType.APPLICATION_JSON)
+			       .accept(MediaType.APPLICATION_JSON))
 		 		  .andDo(print())
-			      .andExpect(content().string(sampleText));
+			      .andExpect(content().string(postingJsonString));
 	 }
 	 
 	 @Test
-	 public void echoInputTextWithSpecialCharacters() throws Exception {
-		 String sampleText = "å∫π";
+	 public void echoInputMessageBodyWithSpecialCharacters() throws Exception {
+		 String messageBody = "å∫π";
+		 String postingJsonString = asJsonString(new Posting(messageBody));
 		 mockMvc.perform( MockMvcRequestBuilders
 			       .post("/forumposts")
-			       .content(sampleText)
-			       .contentType("text/plain;charset=UTF-8")
-			       .accept(MediaType.TEXT_PLAIN_VALUE))
+			       .content(postingJsonString)
+			       .contentType(MediaType.APPLICATION_JSON_VALUE)
+			       .accept(MediaType.APPLICATION_JSON_VALUE))
 		 		  .andDo(print())
 		 		  .andExpect(status().isCreated())
-				  .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN_VALUE))
-				  .andExpect(content().string(sampleText));
+				  .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
+				  .andExpect(jsonPath("$.messageBody").value(messageBody));
 	 }
 	 
-	 static String asJsonString(final Object obj) {
-	        try {
-	            return new ObjectMapper().writeValueAsString(obj);
-	        } catch (Exception e) {
-	            throw new RuntimeException(e);
-	        }
+	 @Test
+	 public void echoInputWrongPostingInput() throws Exception {
+		 String someInput = "{\"blah\":\"bah\"}";
+		 mockMvc.perform( MockMvcRequestBuilders
+			       .post("/forumposts")
+			       .content(someInput)
+			       .contentType(MediaType.APPLICATION_JSON_VALUE)
+			       .accept(MediaType.APPLICATION_JSON_VALUE))
+		 		.andExpect(jsonPath("$.messageBody", is(nullValue())));
+	 }
+	 
+	 public static String asJsonString(final Object obj) {
+	    try {
+	        return new ObjectMapper().writeValueAsString(obj);
+	    } catch (Exception e) {
+	        throw new RuntimeException(e);
 	    }
+	 }
 }
