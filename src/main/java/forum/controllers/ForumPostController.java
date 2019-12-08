@@ -1,6 +1,12 @@
 package forum.controllers;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,15 +14,36 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import forum.document.Posting;
+import forum.exceptions.CreatePostingMalformedRequestException;
+import forum.repositroy.PostingRepository;
 
 @RestController
 @RequestMapping(path = "/")
 public class ForumPostController {
 	
-	@PostMapping(path = "/forumposts")
+	@Autowired
+	PostingRepository repository;
+	
+	@PostMapping(path = "/postings")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Posting echoForumPost(@RequestBody Posting posting) {
-	    return posting;
+	public Posting savePost(@RequestBody Posting posting) {
+		
+		if(posting.getMessageBody() == null) {
+			throw new CreatePostingMalformedRequestException("Posting should have a non-null messageBody.");
+		}
+		
+		if(posting.getCreateDateTime() == null) {
+		    posting.setCreateDateTime(new Date());
+		}
+		
+		return repository.save(posting);
+	}
+	
+	// by default Get all returns posts sorted with createDateTime DESC order
+	@GetMapping(path = "/postings")
+	@ResponseStatus(HttpStatus.CREATED)
+	public List<Posting> getAllPosts() {
+	    return repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
 	}
 }
 

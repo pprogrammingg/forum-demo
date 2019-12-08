@@ -1,15 +1,34 @@
 package forum.document;
 
+import java.util.Date;
+
 public class Posting {
-	private String messageBody;
+	
+	public String id;
+	public String messageBody;
+	public Date createDateTime;
 
 	public Posting() {
 		
 	}
 	
+	public Posting(String messageBody, Date createDateTime) {
+		super();
+		this.messageBody = messageBody;
+		this.createDateTime = createDateTime;
+	}
+	
 	public Posting(String messageBody) {
 		super();
 		this.messageBody = messageBody;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getMessageBody() {
@@ -19,10 +38,20 @@ public class Posting {
 	public void setMessageBody(String messageBody) {
 		this.messageBody = messageBody;
 	}
+	
+	public Date getCreateDateTime() {
+		return createDateTime;
+	}
+
+	public void setCreateDateTime(Date createDateTime) {
+		this.createDateTime = createDateTime;
+	}
 
 	@Override
 	public String toString() {
-		return "Posting [messageBody=" + messageBody + "]";
+		return String.format(
+				"Customer[id=%s, messageBody='%s', createDateTime='%s']",
+				id, messageBody, createDateTime.toString());
 	}
 
 	@Override
