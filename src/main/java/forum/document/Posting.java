@@ -9,6 +9,10 @@ public class Posting {
 	public String userFirstName;
 	public String userLastName;
 	public Date createDateTime;
+	
+	/* Original Post Id is used for postings that are comments. 
+	If null means that posting is original and not a comment. */
+	public String originalPostingId;
 
 	public Posting() {
 		
@@ -30,6 +34,15 @@ public class Posting {
 		this.userFirstName = userFirstName;
 		this.userLastName = userLastName;
 		this.createDateTime = createDateTime;
+	}
+	
+	public Posting(String messageBody, String userFirstName, String userLastName, Date createDateTime, String originalPostingId) {
+		super();
+		this.messageBody = messageBody;
+		this.userFirstName = userFirstName;
+		this.userLastName = userLastName;
+		this.createDateTime = createDateTime;
+		this.originalPostingId = originalPostingId;
 	}
 
 	public String getId() {
@@ -71,19 +84,32 @@ public class Posting {
 	public void setUserLastName(String userLastName) {
 		this.userLastName = userLastName;
 	}
-  
+
+	public String getOriginalPostId() {
+		return originalPostingId;
+	}
+
+	public void setOriginalPostId(String originalPostId) {
+		this.originalPostingId = originalPostId;
+	}
+
 	@Override
 	public String toString() {
 		return String.format(
-				"Customer[id=%s, messageBody='%s', createDateTime='%s']",
-				id, messageBody, createDateTime.toString());
+			"Posting[id=%s, messageBody='%s', userFirstName='%', userLastName='%', createDateTime='%s', 'originalPostingId'='%s']",
+			id, messageBody, userFirstName, userLastName, createDateTime.toString(), originalPostingId);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((createDateTime == null) ? 0 : createDateTime.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((messageBody == null) ? 0 : messageBody.hashCode());
+		result = prime * result + ((originalPostingId == null) ? 0 : originalPostingId.hashCode());
+		result = prime * result + ((userFirstName == null) ? 0 : userFirstName.hashCode());
+		result = prime * result + ((userLastName == null) ? 0 : userLastName.hashCode());
 		return result;
 	}
 
@@ -96,10 +122,35 @@ public class Posting {
 		if (getClass() != obj.getClass())
 			return false;
 		Posting other = (Posting) obj;
+		if (createDateTime == null) {
+			if (other.createDateTime != null)
+				return false;
+		} else if (!createDateTime.equals(other.createDateTime))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
 		if (messageBody == null) {
 			if (other.messageBody != null)
 				return false;
 		} else if (!messageBody.equals(other.messageBody))
+			return false;
+		if (originalPostingId == null) {
+			if (other.originalPostingId != null)
+				return false;
+		} else if (!originalPostingId.equals(other.originalPostingId))
+			return false;
+		if (userFirstName == null) {
+			if (other.userFirstName != null)
+				return false;
+		} else if (!userFirstName.equals(other.userFirstName))
+			return false;
+		if (userLastName == null) {
+			if (other.userLastName != null)
+				return false;
+		} else if (!userLastName.equals(other.userLastName))
 			return false;
 		return true;
 	}
