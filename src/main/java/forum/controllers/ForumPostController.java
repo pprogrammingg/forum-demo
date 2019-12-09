@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,18 +41,26 @@ public class ForumPostController {
 		return repository.save(posting);
 	}
 	
-	// by default Get all returns posts sorted with createDateTime DESC order
+	// by default Get all returns original posts (top level posts) sorted with createDateTime DESC order
 	@GetMapping(path = "/postings")
 	@ResponseStatus(HttpStatus.OK)
-	public List<Posting> getAllPosts(@RequestParam(value="userFirstName", defaultValue="") String userFirstName, 
+	public List<Posting> getAllOriginalPosts(@RequestParam(value="userFirstName", defaultValue="") String userFirstName, 
 			  						 @RequestParam(value="userLastName", defaultValue="") String userLastName ) {
 		
 		if(userFirstName != null && !userFirstName.isEmpty() 
 				&& userLastName != null && !userLastName.isEmpty()) {
 			return repository.findByUserFirstNameAndUserLastName(userFirstName, userLastName, new Sort(Sort.Direction.DESC,"createDateTime"));
 		}
+
+	    return repository.findOriginalPostingsOnly(new Sort(Sort.Direction.DESC,"createDateTime"));
+	}
+	
+	// by default Get all returns posts sorted with createDateTime DESC order
+	@GetMapping(path = "/postings/{id}/comments")
+	@ResponseStatus(HttpStatus.OK)
+	public List<Posting> getAllCommentsForAPost(@PathVariable("id") String originalPostingId ) {
 		
-	  return repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
+	    return repository.findByOriginalPostingId(originalPostingId, new Sort(Sort.Direction.DESC,"createDateTime"));
 	}
 }
 

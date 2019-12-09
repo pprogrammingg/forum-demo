@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import forum.controllers.ForumPostController;
 import forum.document.Posting;
+import forum.repositroy.PostingRepository;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ForumPostController.class)
@@ -44,12 +45,12 @@ public class ForumPostControllerTest {
 	 private PostingRepository repository;
 
 	 @Test
-	 public void savePosting() throws Exception {
+	 public void savePostingWithAllFields() throws Exception {
 		 
 		 Posting newPostingRequest = new Posting("someMsg");
 		 String newPostingRequestJsonStr = asJsonString(newPostingRequest);
 		 
-		 Posting mockPostingResult = new Posting("someMsg", null, null, new Date());
+		 Posting mockPostingResult = new Posting("someMsg", "Tia", "Koko", new Date(), "12345");
 		 mockPostingResult.setId("123");
  
 		 when(repository.save(any(Posting.class))).thenReturn(mockPostingResult);
@@ -64,7 +65,10 @@ public class ForumPostControllerTest {
 			      .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 			      .andExpect(jsonPath("$.messageBody").value("someMsg"))
 		 		  .andExpect(jsonPath("$.id").value("123"))
-		          .andExpect(jsonPath("$.createDateTime").isNotEmpty());
+		 		  .andExpect(jsonPath("$.userFirstName").value("Tia"))
+		 		  .andExpect(jsonPath("$.userLastName").value("Koko"))
+		          .andExpect(jsonPath("$.createDateTime").isNotEmpty())
+		          .andExpect(jsonPath("$.originalPostId").value("12345"));
 	 }
 	 
 	 @Test
@@ -132,7 +136,7 @@ public class ForumPostControllerTest {
 		            new Posting("hello world", "Tia", "Koko", new Date()),
 		            new Posting("hello world Again", "Yeye", "Miambo", new Date()));
 		 
-		 when(repository.findAll(any(Sort.class))).thenReturn(postings);
+		 when(repository.findOriginalPostingsOnly(any(Sort.class))).thenReturn(postings);
 		 
 		 mockMvc.perform(get("/postings"))
 		 		.andDo(print())
@@ -146,7 +150,7 @@ public class ForumPostControllerTest {
 	            .andExpect(jsonPath("$[1].userFirstName", is("Yeye")))
 	            .andExpect(jsonPath("$[1].userLastName", is("Miambo")));
 		 
-		 verify(repository, times(1)).findAll(any(Sort.class));
+		 verify(repository, times(1)).findOriginalPostingsOnly(any(Sort.class));
 		 verifyNoMoreInteractions(repository);
 	 }
 	 
@@ -180,7 +184,7 @@ public class ForumPostControllerTest {
 				 	new Posting("hello world", "Tia", "Koko", new Date()),
 		            new Posting("hello world Again", "Yeye", "Miambo", new Date()));
 		 
-		 when(repository.findAll(any(Sort.class))).thenReturn(postings);
+		 when(repository.findOriginalPostingsOnly(any(Sort.class))).thenReturn(postings);
 		 
 		 mockMvc.perform(get("/postings").param("userFirstName", "Tia"))
 		 		.andDo(print())
@@ -194,7 +198,7 @@ public class ForumPostControllerTest {
 	            .andExpect(jsonPath("$[1].userFirstName", is("Yeye")))
 	            .andExpect(jsonPath("$[1].userLastName", is("Miambo")));
 		 
-		 verify(repository, times(1)).findAll(any(Sort.class));
+		 verify(repository, times(1)).findOriginalPostingsOnly(any(Sort.class));
 		 verifyNoMoreInteractions(repository);
 	 }
 	 
@@ -204,7 +208,7 @@ public class ForumPostControllerTest {
 				 	new Posting("hello world", "Tia", "Koko", new Date()),
 		            new Posting("hello world Again", "Yeye", "Miambo", new Date()));
 		 
-		 when(repository.findAll(any(Sort.class))).thenReturn(postings);
+		 when(repository.findOriginalPostingsOnly(any(Sort.class))).thenReturn(postings);
 		 
 		 mockMvc.perform(get("/postings").param("userLastName", "Koko"))
 		 		.andDo(print())
@@ -218,7 +222,7 @@ public class ForumPostControllerTest {
 	            .andExpect(jsonPath("$[1].userFirstName", is("Yeye")))
 	            .andExpect(jsonPath("$[1].userLastName", is("Miambo")));
 		 
-		 verify(repository, times(1)).findAll(any(Sort.class));
+		 verify(repository, times(1)).findOriginalPostingsOnly(any(Sort.class));
 		 verifyNoMoreInteractions(repository);
 	 }
 	 
@@ -228,7 +232,7 @@ public class ForumPostControllerTest {
 				 	new Posting("hello world", "Tia", "Koko", new Date()),
 		            new Posting("hello world Again", "Yeye", "Miambo", new Date()));
 		 
-		 when(repository.findAll(any(Sort.class))).thenReturn(postings);
+		 when(repository.findOriginalPostingsOnly(any(Sort.class))).thenReturn(postings);
 		 
 		 mockMvc.perform(get("/postings")
 				.param("userFirstName", "Tia")
@@ -244,7 +248,7 @@ public class ForumPostControllerTest {
 	            .andExpect(jsonPath("$[1].userFirstName", is("Yeye")))
 	            .andExpect(jsonPath("$[1].userLastName", is("Miambo")));
 		 
-		 verify(repository, times(1)).findAll(any(Sort.class));
+		 verify(repository, times(1)).findOriginalPostingsOnly(any(Sort.class));
 		 verifyNoMoreInteractions(repository);
 	 }
 	 
@@ -254,7 +258,7 @@ public class ForumPostControllerTest {
 				 	new Posting("hello world", "Tia", "Koko", new Date()),
 		            new Posting("hello world Again", "Yeye", "Miambo", new Date()));
 		 
-		 when(repository.findAll(any(Sort.class))).thenReturn(postings);
+		 when(repository.findOriginalPostingsOnly(any(Sort.class))).thenReturn(postings);
 		 
 		 mockMvc.perform(get("/postings")
 				.param("userFirstName", "")
@@ -270,7 +274,31 @@ public class ForumPostControllerTest {
 	            .andExpect(jsonPath("$[1].userFirstName", is("Yeye")))
 	            .andExpect(jsonPath("$[1].userLastName", is("Miambo")));
 		 
-		 verify(repository, times(1)).findAll(any(Sort.class));
+		 verify(repository, times(1)).findOriginalPostingsOnly(any(Sort.class));
+		 verifyNoMoreInteractions(repository);
+	 }
+	 
+	 @Test
+	 public void findAllCommentsForAPosting() throws Exception {
+		 List<Posting> comments= Arrays.asList(
+				 	new Posting("hello world", "Tia", "Koko", new Date(), "1234"),
+		            new Posting("hello world Again", "Yeye", "Miambo", new Date(), "1234"));
+		 
+		 when(repository.findByOriginalPostingId(any(String.class), any(Sort.class))).thenReturn(comments);
+		 
+		 mockMvc.perform(get("/postings/{id}/comments", "1234"))
+		 		.andDo(print())
+		 		.andExpect(status().isOk())
+	            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+	            .andExpect(jsonPath("$", hasSize(2)))
+	            .andExpect(jsonPath("$[0].messageBody", is("hello world")))
+	            .andExpect(jsonPath("$[0].userFirstName", is("Tia")))
+	            .andExpect(jsonPath("$[0].userLastName", is("Koko")))
+	            .andExpect(jsonPath("$[1].messageBody", is("hello world Again")))
+	            .andExpect(jsonPath("$[1].userFirstName", is("Yeye")))
+	            .andExpect(jsonPath("$[1].userLastName", is("Miambo")));
+		 
+		 verify(repository, times(1)).findByOriginalPostingId(any(String.class), any(Sort.class));
 		 verifyNoMoreInteractions(repository);
 	 }
 	 

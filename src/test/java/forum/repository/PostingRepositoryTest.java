@@ -24,7 +24,7 @@ public class PostingRepositoryTest {
 	@Autowired
 	PostingRepository repository;
 
-	Posting majorPost, minorPost, miscPost;
+	Posting majorPost, minorPost, miscPost, majorPostComment, miscPostComment1, miscPostComment2;
 
 	@Before
 	public void setUp() {
@@ -34,6 +34,12 @@ public class PostingRepositoryTest {
 		majorPost = repository.save(new Posting("major post!", "Yeye", "Miambo", new Date()));
 		minorPost = repository.save(new Posting("minor post!", "Tia", "Koko", new Date()));
 		miscPost = repository.save(new Posting("misc post!", "Tia", "Koko", new Date()));
+		
+		majorPostComment = repository.save(new Posting("Major post comment", "Lulu", "Aqua", new Date(), majorPost.getId()));
+
+		miscPostComment1 = repository.save(new Posting("comment to misc posting", "Joo", "Doo", new Date(), miscPost.getId()));
+		miscPostComment2 = repository.save(new Posting("comment2 to misc", "Xib", "Alba", new Date(), miscPost.getId()));
+
 	}
 
 	@Test
@@ -114,8 +120,22 @@ public class PostingRepositoryTest {
 	
 	@Test
 	public void findsAllSortedByCreateDateTime() {
-		
+
 		List<Posting> result = repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
+		assertThat(result.get(0).getCreateDateTime()).isAfter(result.get(1).getCreateDateTime());
+	}
+
+	@Test
+	public void findAllOriginalPostingsOnly() {
+		List<Posting> result = repository.findOriginalPostingsOnly(new Sort(Sort.Direction.DESC,"createDateTime"));
+		assertThat(result).hasSize(3);
+		assertThat(result.get(0).getCreateDateTime()).isAfter(result.get(1).getCreateDateTime());
+	}
+	
+	@Test
+	public void findCommentsForACertainOriginalPost() {
+		List<Posting> result = repository.findByOriginalPostingId(miscPost.getId(), new Sort(Sort.Direction.DESC,"createDateTime"));
+		assertThat(result).hasSize(2);
 		assertThat(result.get(0).getCreateDateTime()).isAfter(result.get(1).getCreateDateTime());
 	}
 }
