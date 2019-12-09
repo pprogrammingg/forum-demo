@@ -1,15 +1,37 @@
 package forum.document;
 
+import java.util.Date;
+
 public class Posting {
-	private String messageBody;
+	
+	public String id;
+	public String messageBody;
+	public String userFirstName;
+	public String userLastName;
+	public Date createDateTime;
 
 	public Posting() {
 		
 	}
 	
 	public Posting(String messageBody) {
+		this.messageBody = messageBody;
+	}
+
+	public Posting(String messageBody, String userFirstName, String userLastName, Date createDateTime) {
 		super();
 		this.messageBody = messageBody;
+		this.userFirstName = userFirstName;
+		this.userLastName = userLastName;
+		this.createDateTime = createDateTime;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getMessageBody() {
@@ -19,10 +41,36 @@ public class Posting {
 	public void setMessageBody(String messageBody) {
 		this.messageBody = messageBody;
 	}
+	
+	public Date getCreateDateTime() {
+		return createDateTime;
+	}
+
+	public void setCreateDateTime(Date createDateTime) {
+		this.createDateTime = createDateTime;
+	}
+
+	public String getUserFirstName() {
+		return userFirstName;
+	}
+
+	public void setUserFirstName(String userFirstName) {
+		this.userFirstName = userFirstName;
+	}
+
+	public String getUserLastName() {
+		return userLastName;
+	}
+
+	public void setUserLastName(String userLastName) {
+		this.userLastName = userLastName;
+	}
 
 	@Override
 	public String toString() {
-		return "Posting [messageBody=" + messageBody + "]";
+		return String.format(
+				"Customer[id=%s, messageBody='%s', createDateTime='%s']",
+				id, messageBody, createDateTime.toString());
 	}
 
 	@Override
