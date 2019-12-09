@@ -31,15 +31,9 @@ public class PostingRepositoryTest {
 
 		repository.deleteAll();
 
-		majorPost = repository.save(new Posting("major post!", new Date()));
-		minorPost = repository.save(new Posting("minor post!", new Date()));
-		miscPost = repository.save(new Posting("misc post!", new Date()));
-	}
-	
-	@After 
-	public void tearDown() {
-
-		repository.deleteAll();
+		majorPost = repository.save(new Posting("major post!", "Yeye", "Miambo", new Date()));
+		minorPost = repository.save(new Posting("minor post!", "Tia", "Koko", new Date()));
+		miscPost = repository.save(new Posting("misc post!", "Tia", "Koko", new Date()));
 	}
 
 	@Test
@@ -59,6 +53,55 @@ public class PostingRepositoryTest {
 	public void findsByNonExistentMessageBody() {
 
 		List<Posting> result = repository.findByMessageBody("non-existent-message-body");
+		assertThat(result).hasSize(0);
+	}
+	
+	@Test
+	public void findsByUserFirstNameAndUserLastName() {
+
+		Sort sort = new Sort(Sort.Direction.DESC,"createDateTime");
+		List<Posting> result = repository.findByUserFirstNameAndUserLastName("Tia", "Koko", sort);
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).getCreateDateTime()).isAfter(result.get(1).getCreateDateTime());
+	}
+	
+	@Test
+	public void findsByNonExistentUser() {
+
+		Sort sort = new Sort(Sort.Direction.DESC,"createDateTime");
+		List<Posting> result = repository.findByUserFirstNameAndUserLastName("None", "Existent", sort);
+		assertThat(result).hasSize(0);
+	}
+	
+	@Test
+	public void findsByNullUserFirstName() {
+
+		Sort sort = new Sort(Sort.Direction.DESC,"createDateTime");
+		List<Posting> result = repository.findByUserFirstNameAndUserLastName(null, "Sham", sort);
+		assertThat(result).hasSize(0);
+	}
+	
+	@Test
+	public void findsByEmptyUserFirstName() {
+
+		Sort sort = new Sort(Sort.Direction.DESC,"createDateTime");
+		List<Posting> result = repository.findByUserFirstNameAndUserLastName("", "Koko", sort);
+		assertThat(result).hasSize(0);
+	}
+
+	@Test
+	public void findsByNullUserLastName() {
+
+		Sort sort = new Sort(Sort.Direction.DESC,"createDateTime");
+		List<Posting> result = repository.findByUserFirstNameAndUserLastName("Tia", null, sort);
+		assertThat(result).hasSize(0);
+	}
+	
+	@Test
+	public void findsByEmptyUserLastName() {
+
+		Sort sort = new Sort(Sort.Direction.DESC,"createDateTime");
+		List<Posting> result = repository.findByUserFirstNameAndUserLastName("Tia", "", sort);
 		assertThat(result).hasSize(0);
 	}
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,9 +42,16 @@ public class ForumPostController {
 	
 	// by default Get all returns posts sorted with createDateTime DESC order
 	@GetMapping(path = "/postings")
-	@ResponseStatus(HttpStatus.CREATED)
-	public List<Posting> getAllPosts() {
-	    return repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
+	@ResponseStatus(HttpStatus.OK)
+	public List<Posting> getAllPosts(@RequestParam(value="userFirstName", defaultValue="") String userFirstName, 
+			  						 @RequestParam(value="userLastName", defaultValue="") String userLastName ) {
+		
+		if(userFirstName != null && !userFirstName.isEmpty() 
+				&& userLastName != null && !userLastName.isEmpty()) {
+			return repository.findByUserFirstNameAndUserLastName(userFirstName, userLastName, new Sort(Sort.Direction.DESC,"createDateTime"));
+		}
+		
+	  return repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
 	}
 }
 

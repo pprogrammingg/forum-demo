@@ -12,5 +12,6 @@ public interface PostingRepository extends MongoRepository<Posting, String> {
 
 	public Optional<Posting> findById(String id);
 	public List<Posting> findByMessageBody(String messageBody);
+	public List<Posting> findByUserFirstNameAndUserLastName(String userFirstName, String userLastName, Sort sort);
 	public List<Posting> findAll(Sort sort);
 }
