@@ -1,11 +1,12 @@
 package forum.controllers;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -29,8 +30,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import forum.controllers.ForumPostController;
 import forum.document.Posting;
-import forum.repositroy.PostingRepository;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ForumPostController.class)
@@ -50,6 +51,7 @@ public class ForumPostControllerTest {
 		 
 		 Posting mockPostingResult = new Posting("someMsg", null, null, new Date());
 		 mockPostingResult.setId("123");
+ 
 		 when(repository.save(any(Posting.class))).thenReturn(mockPostingResult);
 
 		 mockMvc.perform( MockMvcRequestBuilders

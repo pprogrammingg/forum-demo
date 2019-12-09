@@ -51,7 +51,7 @@ public class ForumPostController {
 			return repository.findByUserFirstNameAndUserLastName(userFirstName, userLastName, new Sort(Sort.Direction.DESC,"createDateTime"));
 		}
 		
-	    return repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
+	  return repository.findAll(new Sort(Sort.Direction.DESC,"createDateTime"));
 	}
 }
 

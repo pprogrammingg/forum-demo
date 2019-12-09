@@ -35,12 +35,6 @@ public class PostingRepositoryTest {
 		minorPost = repository.save(new Posting("minor post!", "Tia", "Koko", new Date()));
 		miscPost = repository.save(new Posting("misc post!", "Tia", "Koko", new Date()));
 	}
-	
-	@After 
-	public void tearDown() {
-
-		repository.deleteAll();
-	}
 
 	@Test
 	public void setsIdOnSave() {

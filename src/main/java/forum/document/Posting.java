@@ -14,6 +14,12 @@ public class Posting {
 		
 	}
 	
+	public Posting(String messageBody, Date createDateTime) {
+		super();
+		this.messageBody = messageBody;
+		this.createDateTime = createDateTime;
+	}
+	
 	public Posting(String messageBody) {
 		this.messageBody = messageBody;
 	}
@@ -48,8 +54,8 @@ public class Posting {
 
 	public void setCreateDateTime(Date createDateTime) {
 		this.createDateTime = createDateTime;
-	}
-
+  }
+ 
 	public String getUserFirstName() {
 		return userFirstName;
 	}
@@ -65,7 +71,7 @@ public class Posting {
 	public void setUserLastName(String userLastName) {
 		this.userLastName = userLastName;
 	}
-
+  
 	@Override
 	public String toString() {
 		return String.format(
